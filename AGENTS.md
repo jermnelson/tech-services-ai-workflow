@@ -4,14 +4,13 @@ This is a demonstration project showing how an AI agentic harness (e.g. Claude C
 can drive a technical services workflow: pulling cataloging records out of a FOLIO
 ILS, transforming them into BIBFRAME linked-data records, and ingesting them into a
 Blue Core datastore. The actual work is defined as **skills** under `skills/`, not
-as application code — `main.py` is a placeholder entry point.
+as application code.
 
 ## Setup & Running
 
 - Python 3.12+ is required (`.python-version` pins a specific interpreter).
 - Use `uv` for all dependency management and execution.
   - Bootstrap venv: `uv sync`
-  - Run: `uv run main.py`
 - Dependencies (`pyproject.toml`): `folioclient`, `bluecore-client`.
 - Secrets and endpoints are supplied via environment variables, optionally loaded
   from a `.env` file in the project root (gitignored, never commit it). Expected
@@ -29,7 +28,11 @@ as application code — `main.py` is a placeholder entry point.
   2. `bibframe-transformation` — reverse the mappings from the
      [bluecore-workflows](https://github.com/blue-core-lod/bluecore-workflows) repo
      to turn that FOLIO JSON into BIBFRAME Work and Instance RDF/JSON-LD.
-  3. `blue-core-mcp-ingestion` — push the resulting BIBFRAME records into a Blue
+  3. For any produced BIBFRAME RDF/JSON-LD, require the user to view the RDF and explictly
+     approve ingesting into Blue Core using `blue-core-mcp-ingestion` step. If the user
+     rejects, follow-up and adjust the RDF based on the user's feedback and exit the 
+     workflow if the user requests to abort.
+  4. `blue-core-mcp-ingestion` — push the resulting BIBFRAME records into a Blue
      Core datastore via its MCP endpoint, using `scripts/blue_core_mcp.py` as a
      stdio↔HTTP proxy that injects a Keycloak bearer token.
 - No tests, no CI, no build scripts — this is a presentation/demo repo, not
