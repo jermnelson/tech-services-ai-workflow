@@ -24,7 +24,7 @@ sequence by an agent rather than as application code:
 ## Workflow Diagram
 ```mermaid
 flowchart LR
-   USER[User enters FOLIO Instance UUID or HRID] --> FOLIO[Retrieves FOLIO Inventory JSON Record]
+   PROMPT[User enters FOLIO Instance UUID or HRID] --> FOLIO[Retrieves FOLIO Inventory JSON Record]
    FOLIO --> BFTRANSFORM[Transform to BIBFRAME Work and Instance]
    BFTRANSFORM --> USER[User approval]
    USER --> BC_MCP[Ingest into Blue Core]
