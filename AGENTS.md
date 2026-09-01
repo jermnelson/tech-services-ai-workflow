@@ -20,7 +20,6 @@ as application code.
 
 ## Project Structure
 
-- `main.py` — placeholder entry point (`def main()`); not the focus of this repo.
 - `skills/` — the actual workflow, split into three skills meant to be run in
   sequence by an agent:
   1. `folio-inventory-retrieval` — look up a FOLIO Instance (by UUID, HRID, or
@@ -28,7 +27,8 @@ as application code.
   2. `bibframe-transformation` — reverse the mappings from the
      [bluecore-workflows](https://github.com/blue-core-lod/bluecore-workflows) repo
      to turn that FOLIO JSON into BIBFRAME Work and Instance RDF/JSON-LD.
-  3. For any produced BIBFRAME RDF/JSON-LD, require the user to view the RDF and explictly
+  3. For any produced BIBFRAME RDF/JSON-LD, serialize the RDF as turtle and save a copy
+     to an `output/{hrid}` directory and then require the user to view the RDF and explicitly
      approve ingesting into Blue Core using `blue-core-mcp-ingestion` step. If the user
      rejects, follow-up and adjust the RDF based on the user's feedback and exit the 
      workflow if the user requests to abort.

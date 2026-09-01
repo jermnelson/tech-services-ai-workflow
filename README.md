@@ -21,5 +21,15 @@ sequence by an agent rather than as application code:
    agent's stdio MCP transport to Blue Core's HTTP MCP server, injecting a
    Keycloak bearer token).
 
+## Workflow Diagram
+```mermaid
+flowchart TD
+   USER[User enters FOLIO Instance UUID or HRID] --> FOLIO[Retrieves FOLIO Inventory JSON Record]
+   FOLIO --> BFTRANSFORM[Transform to BIBFRAME Work and Instance]
+   BFTRANSFORM --> USER[User approval]
+   USER --> BC_MCP[Ingest into Blue Core]
+```
+``
+
 See `AGENTS.md` for setup instructions and guidance on how an agent should work
 with this repo.
