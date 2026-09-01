@@ -50,13 +50,8 @@ as application code.
   and `bf_work.py`) — consult that mapping rather than guessing at BIBFRAME shape.
 - Never hardcode or print credentials; always read them from environment
   variables / `.env`, matching the variable names listed above.
-- `.SKILL.md.swp` files under `skills/` are stray editor swap files, not part of
-  the skill content — ignore them (and feel free to delete them if asked to
-  clean up).
 
 ## Conventions
-
-- Entry point: `main.py` → `def main()`.
 - Virtual environment: `.venv/` (gitignored, created by `uv`).
 - Since this repo backs live presentations, prefer minimal, demo-friendly changes
   over larger refactors unless asked otherwise.

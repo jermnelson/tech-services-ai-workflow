@@ -17,7 +17,7 @@ BLUECORE_URL = os.environ.get("BLUECORE_URL", "http://localhost")
 BLUECORE_USER = os.environ.get("BLUECORE_USER", "developer")
 BLUECORE_PASSWORD = os.environ.get("BLUECORE_PASSWORD", "123456")
 
-def get_token(url=BLUECORE_URL, username=BLUECORE_PASSWORD, password=BLUECORE_PASSWORD):
+def get_token(url=BLUECORE_URL, username=BLUECORE_USER, password=BLUECORE_PASSWORD):
     keycloak_token = httpx.post(f"{url}/keycloak/realms/bluecore/protocol/openid-connect/token",
                       data={
                           "client_id": "bluecore_api",
