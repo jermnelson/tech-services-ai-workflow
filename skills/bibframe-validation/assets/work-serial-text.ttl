@@ -1,0 +1,105 @@
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<big:Agent> a sh:NodeShape ;
+    sh:or ( [ sh:minCount 1 ;
+                sh:path rdfs:label ;
+                sh:severity sh:Warning ] [ sh:minCount 1 ;
+                sh:path bf:code ;
+                sh:severity sh:Warning ] ) ;
+    sh:targetClass bf:Agent,
+        bf:Family,
+        bf:Jurisdiction,
+        bf:Meeting,
+        bf:Organization,
+        bf:Person .
+
+<big:Role> a sh:NodeShape ;
+    sh:or ( [ sh:minCount 1 ;
+                sh:path rdfs:label ;
+                sh:severity sh:Warning ] [ sh:minCount 1 ;
+                sh:path bf:code ;
+                sh:severity sh:Warning ] ) ;
+    sh:targetClass bf:Role .
+
+<big:Serial:Work> a sh:NodeShape ;
+    rdfs:label "Work (Serial) Text" ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "Contribution" ;
+            sh:minCount 1 ;
+            sh:node <big:Contribution> ;
+            sh:path bf:contribution ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Language" ;
+            sh:minCount 1 ;
+            sh:path bf:language ;
+            sh:severity sh:Violation ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Work Title" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node <big:Title> ;
+            sh:path bf:title ;
+            sh:severity sh:Violation ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Place of Origin of the Work" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path bf:originPlace ;
+            sh:severity sh:Info ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Identifier" ;
+            sh:minCount 1 ;
+            sh:node <big:SerialIdentifier> ;
+            sh:path bf:identifiedBy ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Date of Work" ;
+            sh:minCount 1 ;
+            sh:path bf:originDate ;
+            sh:severity sh:Info ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Content Type" ;
+            sh:minCount 1 ;
+            sh:path bf:content ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Subject of the Work" ;
+            sh:minCount 1 ;
+            sh:path bf:subject ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Classification numbers" ;
+            sh:minCount 1 ;
+            sh:path bf:classification ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Administrative metadata" ;
+            sh:minCount 1 ;
+            sh:path bf:adminMetadata ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass bf:Serial,
+        bf:Text .
+
+<big:SerialIdentifier> a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "Serial Identifier" ;
+            sh:minCount 1 ;
+            sh:path rdf:value ;
+            sh:severity sh:Warning ] ;
+    sh:targetClass bf:Issn,
+        bf:IssnL .
+
+<big:Title> a sh:NodeShape ;
+    rdfs:label "Title" ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "Main Title" ;
+            sh:minCount 1 ;
+            sh:path bf:mainTitle ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass bf:Title .
+

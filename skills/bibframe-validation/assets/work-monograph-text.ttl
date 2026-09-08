@@ -1,0 +1,159 @@
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<big:Monograph:Work> a sh:NodeShape ;
+    rdfs:label "Work (Monograph) Text" ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "Relation" ;
+            sh:minCount 1 ;
+            sh:node <big:Relation> ;
+            sh:path bf:relation ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Date of Work" ;
+            sh:minCount 1 ;
+            sh:path bf:originDate ;
+            sh:severity sh:Info ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Subject of the Work" ;
+            sh:minCount 1 ;
+            sh:path bf:subject ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Administrative metadata" ;
+            sh:minCount 1 ;
+            sh:path bf:adminMetadata ;
+            sh:severity sh:Violation ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Classification numbers" ;
+            sh:minCount 1 ;
+            sh:path bf:classification ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Place of Origin of the Work" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path bf:originPlace ;
+            sh:severity sh:Info ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Work Title" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node <big:Title> ;
+            sh:path bf:title ;
+            sh:severity sh:Violation ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Form/Genre of Work" ;
+            sh:minCount 1 ;
+            sh:path bf:genreForm ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Language" ;
+            sh:minCount 1 ;
+            sh:path bf:language ;
+            sh:severity sh:Violation ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Contribution" ;
+            sh:minCount 1 ;
+            sh:node <big:Contribution> ;
+            sh:path bf:contribution ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Content Type" ;
+            sh:minCount 1 ;
+            sh:path bf:content ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass bf:Monograph,
+        bf:Text .
+
+<big:Agent> a sh:NodeShape ;
+    rdfs:label "Agent" ;
+    sh:or ( [ sh:minCount 1 ;
+                sh:path rdfs:label ;
+                sh:severity sh:Warning ] [ sh:minCount 1 ;
+                sh:path bf:code ;
+                sh:severity sh:Warning ] ) ;
+    sh:targetClass bf:Agent,
+        bf:Family,
+        bf:Jurisdiction,
+        bf:Meeting,
+        bf:Organization,
+        bf:Person .
+
+<big:Contribution> a sh:NodeShape ;
+    rdfs:label "Contribution" ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "Agent" ;
+            sh:minCount 1 ;
+            sh:node <big:Agent> ;
+            sh:path bf:agent ;
+            sh:severity sh:Warning ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Role" ;
+            sh:minCount 1 ;
+            sh:node <big:Role> ;
+            sh:path bf:role ;
+            sh:severity sh:Warning ] ;
+    sh:targetClass bf:Contribution,
+        bf:PrimaryContribution .
+
+<big:Relation> a sh:NodeShape ;
+    rdfs:label "Relation" ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "Relationship" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node <big:Relationship> ;
+            sh:path bf:relationship ;
+            sh:severity sh:Violation ],
+        [ a sh:PropertyShape ;
+            rdfs:label "Associated Resource" ;
+            sh:minCount 1 ;
+            sh:node <big:Series> ;
+            sh:path bf:associatedResource ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass bf:Relation .
+
+<big:Relationship> a sh:NodeShape ;
+    rdfs:label "Relationship" ;
+    sh:or ( [ sh:minCount 1 ;
+                sh:path rdfs:label ;
+                sh:severity sh:Warning ] [ sh:minCount 1 ;
+                sh:path bf:code ;
+                sh:severity sh:Warning ] ) ;
+    sh:targetClass bf:Relationship .
+
+<big:Role> a sh:NodeShape ;
+    rdfs:label "Role" ;
+    sh:or ( [ sh:minCount 1 ;
+                sh:node <big:AdminMetadata> ;
+                sh:path rdfs:label ;
+                sh:severity sh:Warning ] [ sh:minCount 1 ;
+                sh:node <big:AdminMetadata> ;
+                sh:path bf:code ;
+                sh:severity sh:Warning ] ) ;
+    sh:targetClass bf:Role .
+
+<big:Series> a sh:NodeShape ;
+    rdfs:label "Series" ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "Series title" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node <big:Title> ;
+            sh:path bf:title ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass bf:Series .
+
+<big:Title> a sh:NodeShape ;
+    rdfs:label "Monograph Title" ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "Main Title" ;
+            sh:minCount 1 ;
+            sh:path bf:mainTitle ;
+            sh:severity sh:Violation ] ;
+    sh:targetClass bf:Title .
+

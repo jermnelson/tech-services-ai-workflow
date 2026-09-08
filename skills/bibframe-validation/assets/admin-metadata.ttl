@@ -1,0 +1,51 @@
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<> a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "" ;
+            sh:path "" ] ;
+    sh:targetClass "" .
+
+<big:AdminMetadata> a sh:NodeShape ;
+    rdfs:label "Admin Metadata" ;
+    sh:or ( [ sh:maxCount 1 ;
+                sh:minCount 1 ;
+                sh:path bf:creationDate ;
+                sh:severity sh:Violation ] [ sh:maxCount 1 ;
+                sh:minCount 1 ;
+                sh:path bf:date ;
+                sh:severity sh:Violation ] ),
+        ( [ sh:maxCount 1 ;
+                sh:minCount 1 ;
+                sh:node <big:Agent> ;
+                sh:path bf:assigner ;
+                sh:severity sh:Violation ] [ sh:maxCount 1 ;
+                sh:minCount 1 ;
+                sh:node <big:Agent> ;
+                sh:path bf:agent ;
+                sh:severity sh:Violation ] ) ;
+    sh:property [ a sh:PropertyShape ;
+            rdfs:label "Source metadata" ;
+            sh:minCount 1 ;
+            sh:path bf:derivedFrom ;
+            sh:severity sh:Warning ] ;
+    sh:targetClass bf:AdminMetadata .
+
+<big:Agent> a sh:NodeShape ;
+    rdfs:label "Agent" ;
+    sh:or ( [ sh:minCount 1 ;
+                sh:path rdfs:label ;
+                sh:severity sh:Warning ] [ sh:minCount 1 ;
+                sh:path bf:code ;
+                sh:severity sh:Warning ] ) ;
+    sh:targetClass bf:Agent,
+        bf:Family,
+        bf:Jurisdiction,
+        bf:Meeting,
+        bf:Organization,
+        bf:Person .
+
