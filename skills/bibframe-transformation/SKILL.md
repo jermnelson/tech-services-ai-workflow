@@ -84,10 +84,6 @@ re-reading `bf_instance.py`/`bf_work.py` from scratch.
 | `bf:note` | `notes[]` with note type "Source of Description note" | `{"@type": "bf:Note", "bf:noteType": "Source of Description note", "rdfs:label": note}`. All other note types go on the Work (see above). |
 | *(not modeled)* | Holdings record (location, call number, etc.) | This skill only covers Work + Instance. Holdings/Item-level BIBFRAME modeling is out of scope — the Holdings JSON is only used by `folio-inventory-retrieval` for context (e.g. confirming the record has available copies), not transformed here. |
 
-## Worked example
-
-For a demo run through this pipeline (FOLIO Instance `ae25f513-9f85-5118-8244-57c77bb6f0af`, "100 greatest science
-fiction themes"), applying this table produced BIBFRAME Work and Instance JSON-LD that ingested successfully into
-Blue Core via `blue-core-mcp-ingestion` (aside from the `bf:hasInstance` ordering issue noted above). That record
-also demonstrated the identifier-duplication quirk: ~30 distinct barcode-like values, each stamped under three
-`identifierTypeId`s, yielding ~90 `bf:identifiedBy` entries — expected, not a bug.
+## Saving the RDF
+The Turtle and JSON-LD serializations should be saved in the `output/{hrid}` directory as `{hrid}.ttl` and
+`{hrid}.json` files.
