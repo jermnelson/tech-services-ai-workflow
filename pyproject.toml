@@ -1,6 +1,6 @@
 [project]
 name = "folio-to-blue-core-technical-services-workflow"
-version = "0.1.0"
+version = "0.2.0"
 description = "Demostration on using AI agentic harnesses for a technical services workflow using FOLIO and Blue Core"
 readme = "README.md"
 requires-python = ">=3.12"
