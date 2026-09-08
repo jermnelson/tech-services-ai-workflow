@@ -11,7 +11,7 @@ as application code.
 - Python 3.12+ is required (`.python-version` pins a specific interpreter).
 - Use `uv` for all dependency management and execution.
   - Bootstrap venv: `uv sync`
-- Dependencies (`pyproject.toml`): `folioclient`, `bluecore-client`.
+- Dependencies (`pyproject.toml`): `folioclient`, `bluecore-client`, `pyschal`.
 - Secrets and endpoints are supplied via environment variables, optionally loaded
   from a `.env` file in the project root (gitignored, never commit it). Expected
   variables:
@@ -27,6 +27,7 @@ as application code.
   2. `bibframe-transformation` — reverse the mappings from the
      [bluecore-workflows](https://github.com/blue-core-lod/bluecore-workflows) repo
      to turn that FOLIO JSON into BIBFRAME Work and Instance RDF/JSON-LD.
+  3. Validate the Work and Instance 
   3. For any produced BIBFRAME RDF/JSON-LD, serialize the RDF as turtle and save a copy
      to an `output/{hrid}` directory and then require the user to view the RDF and explicitly
      approve ingesting into Blue Core using `blue-core-mcp-ingestion` step. If the user

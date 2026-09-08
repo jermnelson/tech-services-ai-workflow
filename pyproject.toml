@@ -6,5 +6,8 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "bluecore-client>=0.1.0",
+    "bluecore-models>=0.29.0",
     "folioclient>=1.0.11",
+    "jupyterlab>=4.6.3",
+    "pyshacl>=0.40.1",
 ]
