@@ -150,11 +150,11 @@ def validate(
         case 0:
             print("  WARNING: no focus nodes -- this is a vacuous pass, not a validated record")
         case _:
-        if not record_shape_fired(incoming_graph, kind):
-            wanted = ", ".join(incoming_graph.qname(c) for c in RECORD_TARGETS[kind])
-            print(f"  WARNING: record-level {kind} shape did not fire -- the graph is typed only "
-                  f"bf:{kind.title()} and carries none of {wanted}, so only nested component "
-                  "shapes were checked")
+            if not record_shape_fired(incoming_graph, kind):
+                wanted = ", ".join(incoming_graph.qname(c) for c in RECORD_TARGETS[kind])
+                print(f"  WARNING: record-level {kind} shape did not fire -- the graph is typed only "
+                      f"bf:{kind.title()} and carries none of {wanted}, so only nested component "
+                      "shapes were checked")
     print(results_text.rstrip())
     return conforms
 
