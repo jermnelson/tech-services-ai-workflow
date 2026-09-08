@@ -2,6 +2,7 @@
 name: bibframe-transformation
 description: Take a FOLIO JSON Inventory Instance and Holdings records, generate BIBFRAME Work and Instance JSON-LD
 ---
+## Background
 With existing JSON records for a FOLIO inventory Instance and Holdings records, reverse the mappings found
 at `https://github.com/blue-core-lod/bluecore-workflows/blob/main/ils_middleware/tasks/folio/mappings/bf_instance.py`
 and `https://github.com/blue-core-lod/bluecore-workflows/blob/main/ils_middleware/tasks/folio/mappings/bf_work.py` to
@@ -55,7 +56,7 @@ re-reading `bf_instance.py`/`bf_work.py` from scratch.
 
 | Work JSON-LD | FOLIO source | Notes |
 |---|---|---|
-| `bf:content` | `instanceTypeId` | Resolve via `fc.instance_types`; write as `{"rdfs:label": <name>}`, e.g. "performed music". |
+| `bf:content` | `instanceTypeId` | Resolve via `fc.instance_types`; write as `{"rdfs:label": <name>}`, e.g. "performed music". **Omit the property entirely when the resolved label is a placeholder** (`"unspecified"`, `"Undefined"`, empty) rather than asserting it — FOLIO uses those as "no value recorded", and `bf:content "unspecified"` claims a content type the record does not actually have. Seen on `a11712006`. |
 | `bf:title` (`bf:Title`) | `title` / `indexTitle` | `{"@type": "bf:Title", "bf:mainTitle": ...}` |
 | `bf:title` (`bf:VariantTitle`) | `alternativeTitles[]` | One node per entry: `{"@type": "bf:VariantTitle", "bf:mainTitle": alternativeTitle}`. (`alternativeTitleTypeId` resolves to a label like "Variant title" if you need to record the subtype.) |
 | `bf:editionStatement` | `editions[]` | Plain strings. |
@@ -74,7 +75,7 @@ re-reading `bf_instance.py`/`bf_work.py` from scratch.
 |---|---|---|
 | `bf:instanceOf` | — | Set to the real created Work's `@id`/URI (see prerequisites note above). |
 | `bf:title` | same as Work's `bf:title` | Instances repeat the title node(s). |
-| `bf:adminMetadata` | `catalogedDate` | `{"@type": "bf:AdminMetadata", "bf:date": catalogedDate}`. |
+| `bf:adminMetadata` | `catalogedDate` + FOLIO tenant | `{"@type": "bf:AdminMetadata", "bf:date": catalogedDate, "bf:assigner": {"@type": "bf:Organization", "bf:code": <MARC org code>, "rdfs:label": <library name>}}`. The assigner is required: `bibframe-validation`'s `big:AdminMetadata` shape has an `sh:or` demanding a date **and** an assigner/agent, so date alone is a `sh:Violation`. The Inventory JSON carries no MARC 040, so derive the agent from the `TENANT` env var via a small lookup (`sul` → `CSt` / "Stanford University Libraries"). **Flag this to the user**: it records which tenant the record was pulled from, not what the catalog says about who created the description, and it is asserted identically on every record from that tenant. The real 040 is available from SRS (`/source-storage/records`) if they want it grounded in the record. |
 | `bf:identifiedBy` | `identifiers[]` | One node per `{identifierTypeId, value}` pair — resolve `identifierTypeId` via `fc.identifier_types` for both `bf:source` (the label) and the RDF `@type` (e.g. OCLC → `bf:Oclc`, ISMN → `bf:Ismn`, UPC → `bf:Upc`, System control number → `bf:Local`, everything else → generic `bf:Identifier`). `rdf:value` = `value`. **Don't dedupe across different `identifierTypeId`s that share the same value** — real FOLIO/MARC records can legitimately (if messily) tag one barcode-like value under three different identifier types; that's a data-quality fact about the record, not a mapping bug. |
 | `bf:media` / `bf:carrier` | `instanceFormatIds[]` | Resolve via `fc.instance_formats` to a label like `"computer -- online resource"`, then split once on `" -- "` into media term / carrier term, each as `{"rdfs:label": ...}`. |
 | `bf:issuance` | `modeOfIssuanceId` | Resolve via `fc.modes_of_issuance`; `{"rdfs:label": <name>}`. |
@@ -85,5 +86,33 @@ re-reading `bf_instance.py`/`bf_work.py` from scratch.
 | *(not modeled)* | Holdings record (location, call number, etc.) | This skill only covers Work + Instance. Holdings/Item-level BIBFRAME modeling is out of scope — the Holdings JSON is only used by `folio-inventory-retrieval` for context (e.g. confirming the record has available copies), not transformed here. |
 
 ## Saving the RDF
-The Turtle and JSON-LD serializations should be saved in the `output/{hrid}` directory as `{hrid}.ttl` and
-`{hrid}.json` files.
+
+Write **four** files to `output/{hrid}/` — each graph in both serializations:
+
+| File | Contents |
+|---|---|
+| `bf_work.jsonld` | Work, JSON-LD — the payload `blue-core-mcp-ingestion` POSTs |
+| `bf_work.ttl` | Work, Turtle — what `bibframe-validation` reads |
+| `bf_instance.jsonld` | Instance, JSON-LD |
+| `bf_instance.ttl` | Instance, Turtle |
+
+These names are not arbitrary: the two downstream stages read them literally. A single
+`{hrid}.ttl`/`{hrid}.json` pair would be one filename for two graphs and would break stages 3 and 4.
+
+Serialize the JSON-LD first and derive the Turtle from it, so the two cannot drift:
+
+```python
+from rdflib import Graph
+for name, doc in [("bf_work", work), ("bf_instance", binst)]:
+    (OUT / f"{name}.jsonld").write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
+    g = Graph()
+    g.parse(data=json.dumps(doc), format="json-ld")
+    g.serialize(destination=str(OUT / f"{name}.ttl"), format="turtle")
+```
+
+Use `ensure_ascii=False` on every write — these records carry diacritics and non-Latin script
+(e.g. `a13806931`'s Turkish title), and escaping them makes the artifacts unreadable for no benefit.
+
+Note that `blue-core-mcp-ingestion` rewrites `bf_instance.jsonld` after ingestion, repointing
+`bf:instanceOf` at the URI the server actually returned. It does not regenerate `bf_instance.ttl`,
+so once a record has been ingested the `.jsonld` is the authoritative copy.
